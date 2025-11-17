@@ -1,47 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#1A1A1A" />
-    <meta
-      name="description"
-      content="KAVIA AI Application"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Royal Purple Quiz</title>
+  <meta name="description" content="A modern, elegant quiz app with timer, scoreboard, and confetti — built with vanilla HTML/CSS/JS." />
+  <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+  <!-- Canvas for confetti -->
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <!-- Load Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>KAVIA App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+  <header class="app-header">
+    <div class="brand">
+      <img src="/assets/img/logo.svg" alt="" class="logo" />
+      <h1 class="brand-title">Royal Purple Quiz</h1>
+    </div>
+    <nav class="nav">
+      <button id="navHome" class="btn btn-ghost" aria-label="Go to Home">Home</button>
+      <button id="navScoreboard" class="btn btn-ghost" aria-label="Open Scoreboard">Scoreboard</button>
+    </nav>
+  </header>
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+  <main class="app-main">
+    <!-- Home Screen -->
+    <section id="screen-home" class="screen active" aria-labelledby="home-title">
+      <div class="card home-card">
+        <h2 id="home-title" class="title">Welcome to the Quiz</h2>
+        <p class="subtitle">10 questions. 10 seconds each. Can you score a perfect 10?</p>
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+        <div class="info-grid">
+          <div class="info-chip">
+            <span class="chip-icon">⏱️</span>
+            <span>10s per question</span>
+          </div>
+          <div class="info-chip">
+            <span class="chip-icon">✅</span>
+            <span>Immediate selection highlight</span>
+          </div>
+          <div class="info-chip">
+            <span class="chip-icon">📊</span>
+            <span>Local scoreboard</span>
+          </div>
+          <div class="info-chip">
+            <span class="chip-icon">🎉</span>
+            <span>Confetti for high scores</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="btnStartQuiz" class="btn btn-primary btn-lg" aria-label="Start Quiz">Start Quiz</button>
+          <button id="btnViewScoreboard" class="btn btn-secondary" aria-label="View Scoreboard">View Scoreboard</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz Screen -->
+    <section id="screen-quiz" class="screen" aria-labelledby="quiz-title" aria-live="polite">
+      <div class="card quiz-card">
+        <div class="quiz-header">
+          <h2 id="quiz-title" class="title">Question <span id="questionNumber">1</span> of <span id="questionTotal">10</span></h2>
+          <div class="timer" role="timer" aria-live="polite">
+            <span class="timer-label">Time left:</span>
+            <span id="timerValue" class="timer-value" aria-label="Seconds remaining">10</span>s
+          </div>
+        </div>
+
+        <div class="progress">
+          <div id="progressBar" class="progress-bar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="progressbar"></div>
+        </div>
+
+        <div id="questionText" class="question-text">Loading question...</div>
+        <ul id="optionsList" class="options" role="listbox" aria-label="Answer options">
+          <!-- Options populated by JS -->
+        </ul>
+
+        <div class="actions spaced">
+          <button id="btnNext" class="btn btn-primary" aria-label="Next Question (Enter)">Next</button>
+        </div>
+      </div>
+      <p class="hint">Use 1-4 or arrow keys to select, Enter for next.</p>
+    </section>
+
+    <!-- Result Screen -->
+    <section id="screen-result" class="screen" aria-labelledby="result-title">
+      <div class="card result-card">
+        <h2 id="result-title" class="title">Your Result</h2>
+        <div class="result-summary">
+          <div class="stat">
+            <span class="stat-label">Total</span>
+            <span id="statTotal" class="stat-value">10</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Correct</span>
+            <span id="statCorrect" class="stat-value success">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Wrong</span>
+            <span id="statWrong" class="stat-value error">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Score</span>
+            <span id="statScore" class="stat-value highlight">0</span>
+          </div>
+        </div>
+
+        <div class="name-entry">
+          <label for="playerName" class="name-label">Enter your name to save your score:</label>
+          <input id="playerName" class="input" type="text" maxlength="40" placeholder="Your name" aria-required="true" />
+        </div>
+
+        <div class="actions">
+          <button id="btnSaveScore" class="btn btn-primary" aria-label="Save score">Save Score</button>
+          <button id="btnPlayAgain" class="btn btn-secondary" aria-label="Play again">Play Again</button>
+          <button id="btnGoHomeFromResult" class="btn btn-ghost" aria-label="Back to Home">Home</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scoreboard Screen -->
+    <section id="screen-scoreboard" class="screen" aria-labelledby="scoreboard-title">
+      <div class="card scoreboard-card">
+        <div class="scoreboard-header">
+          <h2 id="scoreboard-title" class="title">Scoreboard</h2>
+          <div class="scoreboard-actions">
+            <button id="btnShowAttendees" class="btn btn-secondary" aria-label="View attendees list">Attendees</button>
+            <button id="btnClearScoreboard" class="btn btn-danger" aria-label="Clear scoreboard">Clear Scoreboard</button>
+          </div>
+        </div>
+
+        <div class="table">
+          <div class="table-head">
+            <div>#</div><div>Name</div><div>Score</div><div>Date</div>
+          </div>
+          <div id="scoreboardBody" class="table-body">
+            <!-- Rows populated by JS -->
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="btnBackHomeFromBoard" class="btn btn-ghost" aria-label="Back to Home">Home</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Attendees Screen -->
+    <section id="screen-attendees" class="screen" aria-labelledby="attendees-title">
+      <div class="card scoreboard-card">
+        <div class="scoreboard-header">
+          <h2 id="attendees-title" class="title">Attendees</h2>
+          <div class="scoreboard-actions">
+            <button id="btnBackToBoard" class="btn btn-secondary" aria-label="Back to scoreboard">Scoreboard</button>
+            <button id="btnClearAttendees" class="btn btn-danger" aria-label="Clear attendees">Clear Attendees</button>
+          </div>
+        </div>
+
+        <div class="table">
+          <div class="table-head">
+            <div>#</div><div>Name</div><div>Score</div><div>Date</div>
+          </div>
+          <div id="attendeesBody" class="table-body">
+            <!-- Rows populated by JS -->
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="btnBackHomeFromAttendees" class="btn btn-ghost" aria-label="Back to Home">Home</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Made with 💜 Royal Purple theme</p>
+  </footer>
+
+  <script src="/assets/js/app.js" defer></script>
+</body>
 </html>

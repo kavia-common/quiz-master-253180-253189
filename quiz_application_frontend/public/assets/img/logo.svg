@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Royal Purple Logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#C4B5FD"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#g)"/>
+  <g transform="translate(48,48)">
+    <path d="M40 16c0-8.837 7.163-16 16-16h48c26.51 0 48 21.49 48 48s-21.49 48-48 48H96v16h24c8.837 0 16 7.163 16 16v16c0 8.837-7.163 16-16 16H56c-8.837 0-16-7.163-16-16V16z"
+          fill="#fff" opacity="0.2"/>
+    <path d="M24 32c0-8.837 7.163-16 16-16h64c22.091 0 40 17.909 40 40s-17.909 40-40 40H88v16h16c8.837 0 16 7.163 16 16v16c0 8.837-7.163 16-16 16H40c-8.837 0-16-7.163-16-16V32z"
+          fill="#ffffff"/>
+  </g>
+</svg>
